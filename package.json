@@ -1,0 +1,58 @@
+{
+    "name": "yt-getter",
+    "version": "1.0.0",
+    "description": "CLI tool to download audio and videos from YouTube in various formats.",
+    "bin": {
+        "yt-get": "./dist/index.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "start": "ts-node src/index.ts"
+    },
+    "keywords": [
+        "cli",
+        "youtube",
+        "mp3",
+        "mp4",
+        "audio",
+        "video",
+        "yt-get",
+        "youtube-downloader",
+        "ffmpeg",
+        "yt",
+        "playlist",
+        "batch",
+        "yt-getter",
+        "typescript",
+        "terminal",
+        "youtube-cli"
+    ],
+    "author": "Ahmad Saad",
+    "license": "MIT",
+    "type": "module",
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/saadpocalypse/yt-getter.git"
+    },
+    "bugs": {
+        "url": "https://github.com/your-username/yt-getter/issues"
+    },
+    "homepage": "https://github.com/your-username/yt-getter#readme",
+    "dependencies": {
+        "@distube/ytdl-core": "^4.16.10",
+        "cli-progress": "^3.12.0",
+        "commander": "^11.0.0",
+        "ffmpeg-static": "^5.1.0",
+        "fluent-ffmpeg": "^2.1.2",
+        "ytpl": "^2.3.0"
+    },
+    "devDependencies": {
+        "@types/fluent-ffmpeg": "^2.1.27",
+        "@types/node": "^20.11.17",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.3.3"
+    }
+}
