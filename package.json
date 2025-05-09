@@ -1,6 +1,6 @@
 {
     "name": "yt-getter",
-    "version": "1.1.0",
+    "version": "2.0.0",
     "description": "CLI tool to download audio and videos from YouTube in various formats.",
     "bin": {
         "yt-get": "./dist/index.js"
