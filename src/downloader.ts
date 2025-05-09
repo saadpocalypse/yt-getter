@@ -14,7 +14,7 @@ ffmpeg.setFfmpegPath(ffmpegPath as string);
 const unlinkAsync = promisify(unlink);
 
 export async function downloadAudio(url: string, options: DownloadOptions): Promise<void> {
-    const allowedFormats = ['wav', 'ogg', 'flac', 'aac'];
+    const allowedFormats = ['wav', 'ogg', 'flac', 'aac', 'mp3'];
     const format = options.format?.toLowerCase() || 'mp3';
 
     if (!allowedFormats.includes(format)) {
@@ -28,6 +28,7 @@ export async function downloadAudio(url: string, options: DownloadOptions): Prom
         wav: 'wav',
         ogg: 'ogg',
         flac: 'flac',
+        mp3: 'mp3',
     };
 
     const ffmpegFormat = ffmpegFormatMap[format];
@@ -59,7 +60,7 @@ export async function downloadAudio(url: string, options: DownloadOptions): Prom
             .format(ffmpegFormat)
             .on('error', reject)
             .on('end', () => {
-                console.log(`🎉  Saved: ${outputPath}`);
+                console.log(`Saved: ${outputPath}`);
                 resolve();
             })
             .save(outputPath);
