@@ -88,7 +88,6 @@ export async function downloadVideo(url: string, options: DownloadOptions): Prom
     const audioPath = path.join(tempDir, `${title}-audio.tmp.mp4`);
     const videoPath = path.join(tempDir, `${title}-video.tmp.mp4`);
 
-    // 🎯 Select matching quality format if possible
     let videoFormat = ytdl.chooseFormat(info.formats, { quality: 'highestvideo' });
 
     if (requestedQuality) {
@@ -102,11 +101,11 @@ export async function downloadVideo(url: string, options: DownloadOptions): Prom
         if (match) {
             videoFormat = match;
         } else {
-            console.warn(`⚠️  Quality "${requestedQuality}" not available. Using best available.`);
+            console.warn(`Quality "${requestedQuality}" not available. Using best available.`);
         }
     }
 
-    console.log('⬇️  Downloading video and audio streams...');
+    console.log('Downloading video and audio streams.');
 
     await new Promise<void>((resolve, reject) => {
         ytdl.downloadFromInfo(info, { format: videoFormat })
@@ -122,7 +121,7 @@ export async function downloadVideo(url: string, options: DownloadOptions): Prom
             .on('error', reject);
     });
 
-    console.log('🎬  Merging video and audio...');
+    console.log('Merging video and audio.');
 
     return new Promise((resolve, reject) => {
         ffmpeg()
@@ -133,7 +132,7 @@ export async function downloadVideo(url: string, options: DownloadOptions): Prom
             .format('mp4')
             .on('error', reject)
             .on('end', async () => {
-                console.log(`🎉  Saved: ${outputPath}`);
+                console.log(`Saved: ${outputPath}`);
                 await unlinkAsync(videoPath).catch(() => { });
                 await unlinkAsync(audioPath).catch(() => { });
                 resolve();

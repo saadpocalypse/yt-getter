@@ -57,7 +57,7 @@ const outputDir = path.resolve(opts.output ?? process.cwd());
         }
 
         if (opts.name && inputUrls.length > 1) {
-            console.warn('⚠️  --name is ignored when using multiple URLs. Each video will use its own title.');
+            console.warn('--name is ignored when using multiple URLs. Each video will use its own title.');
         }
 
         let totalIndex = 1;
@@ -67,11 +67,11 @@ const outputDir = path.resolve(opts.output ?? process.cwd());
             const urls = isPlaylist ? await getPlaylistVideoUrls(rawUrl) : [rawUrl];
 
             if (isPlaylist && opts.name) {
-                console.warn('⚠️  --name is ignored for playlists. Each video will use its own title.');
+                console.warn('--name is ignored for playlists. Each video will use its own title.');
             }
 
             for (const videoUrl of urls) {
-                console.log(`\n📦  Downloading item ${totalIndex}...`);
+                console.log(`\nDownloading item ${totalIndex}...`);
 
                 const downloadOpts: DownloadOptions = {
                     outputDir,
@@ -88,7 +88,7 @@ const outputDir = path.resolve(opts.output ?? process.cwd());
         }
 
     } catch (err) {
-        console.error('❌  Error:', (err as Error).message);
+        console.error('Error:', (err as Error).message);
         process.exit(1);
     }
 })();
