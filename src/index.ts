@@ -7,6 +7,17 @@ import path from 'node:path';
 import { getPlaylistVideoUrls } from './utils/playlist.js';
 import { readUrlsFromFile } from './utils/batch.js';
 
+function stripUrlParams(url: string): string {
+    try {
+        const parsed = new URL(url);
+        parsed.searchParams.delete('list');
+        parsed.searchParams.delete('index');
+        return parsed.toString();
+    } catch {
+        return url;
+    }
+}
+
 const program = new Command();
 
 program
@@ -41,7 +52,9 @@ const outputDir = path.resolve(opts.output ?? process.cwd());
         if (opts.batch) {
             inputUrls.push(...readUrlsFromFile(opts.batch));
         } else if (program.args.length > 0) {
-            inputUrls.push(...program.args.map(url => url.trim().replace(/^"|"$/g, '')));
+            inputUrls.push(...program.args.map(url =>
+                stripUrlParams(url.trim().replace(/^"|"$/g, ''))
+            ));
         }
 
         if (inputUrls.length === 0 || (!opts.audio && !opts.video)) {
@@ -60,6 +73,8 @@ const outputDir = path.resolve(opts.output ?? process.cwd());
             console.warn('--name is ignored when using multiple URLs. Each video will use its own title.');
         }
 
+        const failedUrls: string[] = [];
+        let successCount = 0;
         let totalIndex = 1;
 
         for (const rawUrl of inputUrls) {
@@ -71,7 +86,7 @@ const outputDir = path.resolve(opts.output ?? process.cwd());
             }
 
             for (const videoUrl of urls) {
-                console.log(`\nDownloading item ${totalIndex}...`);
+                console.log(`\nDownloading item ${totalIndex}`);
 
                 const downloadOpts: DownloadOptions = {
                     outputDir,
@@ -80,11 +95,33 @@ const outputDir = path.resolve(opts.output ?? process.cwd());
                     quality: opts.quality,
                 };
 
-                if (opts.audio) await downloadAudio(videoUrl, downloadOpts);
-                if (opts.video) await downloadVideo(videoUrl, downloadOpts);
+                let attempts = 0;
+                let success = false;
+
+                while (attempts < 3 && !success) {
+                    try {
+                        if (opts.audio) await downloadAudio(videoUrl, downloadOpts);
+                        if (opts.video) await downloadVideo(videoUrl, downloadOpts);
+                        success = true;
+                        successCount++;
+                    } catch (err) {
+                        attempts++;
+                        console.warn(`Failed attempt ${attempts} for: ${videoUrl}`);
+                        if (attempts === 3) {
+                            console.error(`Skipping: ${videoUrl}`);
+                            failedUrls.push(videoUrl);
+                        }
+                    }
+                }
 
                 totalIndex++;
             }
+        }
+
+        console.log(`\nCompleted: ${successCount} succeeded`);
+        if (failedUrls.length > 0) {
+            console.log(`Failed: ${failedUrls.length} item(s)`);
+            failedUrls.forEach(url => console.log(`   - ${url}`));
         }
 
     } catch (err) {

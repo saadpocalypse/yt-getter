@@ -13,7 +13,20 @@ import fs from 'node:fs';
 ffmpeg.setFfmpegPath(ffmpegPath as string);
 const unlinkAsync = promisify(unlink);
 
+function stripUrlParams(rawUrl: string): string {
+    try {
+        const parsed = new URL(rawUrl);
+        parsed.searchParams.delete('list');
+        parsed.searchParams.delete('index');
+        return parsed.toString();
+    } catch {
+        return rawUrl;
+    }
+}
+
 export async function downloadAudio(url: string, options: DownloadOptions): Promise<void> {
+    url = stripUrlParams(url); // ✅ Sanitize URL early
+
     const allowedFormats = ['wav', 'ogg', 'flac', 'aac', 'mp3'];
     const format = options.format?.toLowerCase() || 'mp3';
 
@@ -68,6 +81,8 @@ export async function downloadAudio(url: string, options: DownloadOptions): Prom
 }
 
 export async function downloadVideo(url: string, options: DownloadOptions): Promise<void> {
+    url = stripUrlParams(url); // ✅ Sanitize URL early
+
     const allowedQualities = ['144p', '240p', '360p', '480p', '720p', '1080p', '1440p', '2160p'];
     const requestedQuality = options.quality?.toLowerCase();
 
@@ -106,7 +121,7 @@ export async function downloadVideo(url: string, options: DownloadOptions): Prom
         }
     }
 
-    console.log('Downloading video and audio streams.');
+    console.log('\nDownloading video and audio streams.');
 
     await new Promise<void>((resolve, reject) => {
         ytdl.downloadFromInfo(info, { format: videoFormat })
